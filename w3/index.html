@@ -1,0 +1,140 @@
+ * 【動態畫布：產生預設烘焙風格底圖】
+     * 當使用者尚未上傳圖片時，動態以 Canvas 繪製好看的咖啡/烘焙插畫作為底圖
+     */
+    function loadSampleImage(type) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 600;
+      canvas.height = 600;
+      const ctx = canvas.getContext('2d');
+
+      // 背景色：溫暖烘焙黃褐色漸層
+      const gradient = ctx.createRadialGradient(300, 300, 50, 300, 300, 420);
+      gradient.addColorStop(0, '#fff3e0');
+      gradient.addColorStop(1, '#d7ccc8');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, 600, 600);
+
+      // 繪製溫馨外框
+      ctx.strokeStyle = '#6d4c41';
+      ctx.lineWidth = 16;
+      ctx.strokeRect(20, 20, 560, 560);
+
+      // 繪製中心圖案與標題
+      ctx.textAlign = 'center';
+      if (type === 'cat_bread') {
+        ctx.font = '120px serif';
+        ctx.fillText('🍞', 300, 280);
+        ctx.font = 'bold 28px "Noto Sans TC", sans-serif';
+        ctx.fillStyle = '#4e342e';
+        ctx.fillText('【 烤 吐 司 喵 喵 】', 300, 380);
+      } else if (type === 'croissant') {
+        ctx.font = '120px serif';
+        ctx.fillText('🥐', 300, 280);
+        ctx.font = 'bold 28px "Noto Sans TC", sans-serif';
+        ctx.fillStyle = '#4e342e';
+        ctx.fillText('【 金 黃 可 頌 】', 300, 380);
+      } else {
+        ctx.font = '120px serif';
+        ctx.fillText('☕', 300, 280);
+        ctx.font = 'bold 28px "Noto Sans TC", sans-serif';
+        ctx.fillStyle = '#4e342e';
+        ctx.fillText('【 】', 300, 380);
+      }
+
+      // 將 Canvas 繪製結果轉為 Data URL 設定給圖片元素
+      document.getElementById('memeBgImg').src = canvas.toDataURL('image/png');
+    }
+
+    /**
+     * 【重要核心 2：即時渲染同步 DOM 屬性】
+     * 讀取輸入框與滑桿的最新數值，並即時更新到預覽區 (memeTopText & memeBottomText) 上
+     */
+    function updateMeme() {
+      // 1. 取得各輸入欄位與控制項數值
+      const topText = document.getElementById('topTextInput').value;
+      const bottomText = document.getElementById('bottomTextInput').value;
+      const fontSize = document.getElementById('fontSize').value;
+      const topPos = document.getElementById('topTextPos').value;
+      const bottomPos = document.getElementById('bottomTextPos').value;
+      const fontFamily = document.getElementById('fontFamily').value;
+      const textColor = document.getElementById('textColor').value;
+
+      // 2. 更新控制面板上的顯示數值標籤
+      document.getElementById('fontSizeVal').innerText = fontSize + ' px';
+      document.getElementById('topTextPosVal').innerText = topPos + ' %';
+      document.getElementById('bottomTextPosVal').innerText = bottomPos + ' %';
+
+      // 3. 取得預覽文字 DOM 區塊
+      const topElem = document.getElementById('memeTopText');
+      const bottomElem = document.getElementById('memeBottomText');
+
+      // 4. 同步更新上方文字的內容與 CSS 樣式
+      topElem.innerText = topText;
+      topElem.style.fontSize = fontSize + 'px';
+      topElem.style.top = topPos + '%';
+      topElem.style.fontFamily = fontFamily;
+      topElem.style.color = textColor;
+
+      // 5. 同步更新下方文字的內容與 CSS 樣式
+      bottomElem.innerText = bottomText;
+      bottomElem.style.fontSize = fontSize + 'px';
+      bottomElem.style.bottom = bottomPos + '%';
+      bottomElem.style.fontFamily = fontFamily;
+      bottomElem.style.color = textColor;
+    }
+
+    /**
+     * 【重要核心 3：使用 html2canvas 截圖並自動下載圖片】
+     * 分析指定的 #memeContainer 元素，將其渲染為 HTML Canvas，隨後轉換成 PNG 格式自動下載。
+     */
+    function downloadMeme() {
+      const btn = document.getElementById('downloadBtn');
+      const btnIcon = document.getElementById('btnIcon');
+      const btnText = document.getElementById('btnText');
+      const memeContainer = document.getElementById('memeContainer');
+
+      // 暫時將按鈕設為「烘焙中/載入中」狀態，避免重複點擊
+      btn.disabled = true;
+      btnIcon.innerText = '⏳';
+      btnText.innerText = '熱騰騰烘焙中...';
+
+      // 呼叫 html2canvas 解析預覽圖區塊
+      html2canvas(memeContainer, {
+        scale: 2,         // scale: 2 提供雙倍解析度的畫質，讓下載出來的圖檔高清不模糊
+        useCORS: true,    // 開啟跨域圖像分析支援
+        backgroundColor: null // 保持容器原有背景
+      }).then(canvas => {
+        // 將畫布產出的內容轉為 PNG 檔案 Data URL
+        const imageURL = canvas.toDataURL('image/png');
+
+        // 建立一個隱藏的 <a> 標籤，觸發瀏覽器下載檔案
+        const link = document.createElement('a');
+        link.href = imageURL;
+        link.download = 'my-meme.png'; // 設定預設下載檔名為 my-meme.png
+
+        // 將連結加入 DOM 並執行點擊下載
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        // 恢復按鈕原本樣式與提示
+        btn.disabled = false;
+        btnIcon.innerText = '✨';
+        btnText.innerText = '出爐成功！點擊再次下載';
+
+        setTimeout(() => {
+          btnIcon.innerText = '🍞';
+          btnText.innerText = '新鮮出爐！一鍵下載 (my-meme.png)';
+        }, 3000);
+      }).catch(err => {
+        console.error('截圖過程發生錯誤：', err);
+        alert('圖檔導出一時遇到困難，請重試或確認圖片來源！');
+
+        btn.disabled = false;
+        btnIcon.innerText = '🍞';
+        btnText.innerText = '新鮮出爐！一鍵下載 (my-meme.png)';
+      });
+    }
+  </script>
+</body>
+</html>
