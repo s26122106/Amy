@@ -1,4 +1,376 @@
- * 【動態畫布：產生預設烘焙風格底圖】
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>☕ 烘焙咖啡迷因閣 - Meme Generator</title>
+
+  <!-- 引入 Tailwind CSS CDN：提供響應式排版與美觀樣式 -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- 引入 html2canvas CDN：負責將 DOM 網頁區塊轉為圖片下載 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+  <!-- 引入 Google Fonts：圓潤可愛的 Baloo 2 與溫暖無襯線體 Noto Sans TC -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
+
+  <style>
+    /* 全域字體與溫暖咖啡色調背景 */
+    body {
+      font-family: 'Baloo 2', 'Noto Sans TC', sans-serif;
+      background-color: #3c2a21;
+      /* 背景點綴烘焙小圓點網格 */
+      background-image: radial-gradient(#6d4c41 1.5px, transparent 1.5px);
+      background-size: 24px 24px;
+      color: #3e2723;
+    }
+
+    /* 烘焙坊卡片風格：奶油卡士達與香醇拿鐵漸層 */
+    .bakery-card {
+      background: linear-gradient(145deg, #fff8f0 0%, #f5e6d3 100%);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35), inset 0 0 15px rgba(109, 76, 65, 0.1);
+      border: 4px solid #8d6e63;
+    }
+
+    /* 烤吐司/烘焙邊框裝飾 */
+    .toast-border {
+      border: 3px dashed #b17d59;
+      border-radius: 1rem;
+    }
+
+    /* 滑桿配色自訂 (Coffee Accent) */
+    input[type=range] {
+      accent-color: #6d4c41;
+    }
+
+    /* 烘焙吐司按鈕樣式 */
+    .bakery-btn {
+      background: linear-gradient(135deg, #8d5b4c 0%, #5d3a2e 100%);
+      color: #fff8f0;
+      box-shadow: 0 6px 15px rgba(60, 42, 33, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.4);
+      transition: all 0.2s ease-in-out;
+    }
+    .bakery-btn:hover {
+      background: linear-gradient(135deg, #a06a59 0%, #6d4437 100%);
+      transform: translateY(-2px);
+    }
+    .bakery-btn:active {
+      transform: translateY(1px);
+    }
+
+    /* 迷因文字效果：多重黑邊包覆 (text-shadow)，保證在任何背景底圖上都清晰顯眼 */
+    .meme-text-stroke {
+      font-weight: 900;
+      line-height: 1.2;
+      word-break: break-word;
+      text-shadow:
+        -2px -2px 0 #000,  
+         2px -2px 0 #000,
+        -2px  2px 0 #000,
+         2px  2px 0 #000,
+        -3px  0px 0 #000,
+         3px  0px 0 #000,
+         0px -3px 0 #000,
+         0px  3px 0 #000,
+         0px  4px 10px rgba(0,0,0,0.85);
+    }
+  </style>
+</head>
+<body class="min-h-screen py-8 px-4 sm:px-6 md:px-10 flex flex-col justify-between">
+
+  <!-- 頁面頂部標題區 -->
+  <header class="text-center mb-8">
+    <div class="inline-block bg-[#efebe9] border-4 border-[#8d6e63] rounded-3xl py-3 px-8 shadow-lg">
+      <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#4e342e] flex items-center justify-center gap-2">
+        <span>🥐</span> 烘焙拿鐵 ‧ 迷因產生器 <span>☕</span>
+      </h1>
+      <p class="text-xs sm:text-sm text-[#795548] font-bold tracking-widest mt-1">
+        WARM COFFEE & FRESH BAKERY MEME STUDIO
+      </p>
+    </div>
+  </header>
+
+  <!-- 主要區域：採用響應式 Layout (桌機左右雙欄 / 手機上下疊加) -->
+  <main class="max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-8">
+
+    <!-- 左側：控制面板區 (5 欄) -->
+    <section class="lg:col-span-5 bakery-card p-6 rounded-3xl space-y-5">
+      <div class="border-b-2 border-[#a1887f] pb-3 flex items-center justify-between">
+        <h2 class="text-xl font-extrabold text-[#4e342e] flex items-center gap-2">
+          <span>🥖</span> 烘焙調味主控台
+        </h2>
+        <span class="text-xs font-bold text-[#8d6e63] bg-[#efebe9] px-2 py-1 rounded-full">點心調製中</span>
+      </div>
+
+      <!-- 1. 本機圖片上傳與預設底圖 -->
+      <div class="space-y-2">
+        <label class="block text-sm font-bold text-[#4e342e]">
+          1. 上傳底圖 (使用 FileReader 本機載入，絕不報 CORS 錯)：
+        </label>
+        
+        <!-- 隱藏原生 input[type="file"]，使用客製化 Label 觸發 -->
+        <input 
+          type="file" 
+          id="imageInput" 
+          accept="image/*" 
+          class="hidden" 
+          onchange="handleImageUpload(event)"
+        >
+        <label 
+          for="imageInput" 
+          class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-[#6d4c41] hover:bg-[#5d4037] text-[#fff8f0] font-bold rounded-2xl cursor-pointer transition shadow-md border-2 border-[#4e342e] text-sm"
+        >
+          <span>📂 從電腦/手機挑選圖片 (FileReader)</span>
+        </label>
+
+        <!-- 試用預設烘焙風格底圖區 -->
+        <div class="pt-2">
+          <span class="text-xs text-[#6d4c41] font-bold block mb-1.5">或快速試用預設烘焙底圖：</span>
+          <div class="flex gap-2">
+            <button 
+              type="button" 
+              onclick="loadSampleImage('cat_bread')"
+              class="flex-1 py-1.5 px-2 bg-[#efebe9] hover:bg-[#d7ccc8] text-[#4e342e] text-xs font-bold rounded-xl border border-[#a1887f] transition shadow-sm"
+            >
+              🐱 貓咪吐司
+            </button>
+            <button 
+              type="button" 
+              onclick="loadSampleImage('croissant')"
+              class="flex-1 py-1.5 px-2 bg-[#efebe9] hover:bg-[#d7ccc8] text-[#4e342e] text-xs font-bold rounded-xl border border-[#a1887f] transition shadow-sm"
+            >
+              🥐 奶油可頌
+            </button>
+            <button 
+              type="button" 
+              onclick="loadSampleImage('coffee')"
+              class="flex-1 py-1.5 px-2 bg-[#efebe9] hover:bg-[#d7ccc8] text-[#4e342e] text-xs font-bold rounded-xl border border-[#a1887f] transition shadow-sm"
+            >
+              ☕ 拿鐵咖啡
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. 雙層文字輸入 -->
+      <div class="space-y-3 pt-3 border-t border-[#d7ccc8]">
+        <div>
+          <label for="topTextInput" class="block text-sm font-bold text-[#4e342e] mb-1">
+            2. 上方文字 (Top Text)：
+          </label>
+          <input 
+            type="text" 
+            id="topTextInput" 
+            placeholder="請輸入上方文字..." 
+            value="早上來一杯熱咖啡"
+            class="w-full px-3.5 py-2.5 bg-[#fff8f0] border-2 border-[#a1887f] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6d4c41] text-sm text-[#3e2723] font-bold"
+            oninput="updateMeme()"
+          >
+        </div>
+
+        <div>
+          <label for="bottomTextInput" class="block text-sm font-bold text-[#4e342e] mb-1">
+            3. 下方文字 (Bottom Text)：
+          </label>
+          <input 
+            type="text" 
+            id="bottomTextInput" 
+            placeholder="請輸入下方文字..." 
+            value="烘焙出一天好心情！"
+            class="w-full px-3.5 py-2.5 bg-[#fff8f0] border-2 border-[#a1887f] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6d4c41] text-sm text-[#3e2723] font-bold"
+            oninput="updateMeme()"
+          >
+        </div>
+      </div>
+
+      <!-- 3. 參數滑桿控制 -->
+      <div class="space-y-3.5 pt-3 border-t border-[#d7ccc8]">
+        <!-- 字體大小滑桿 -->
+        <div>
+          <div class="flex justify-between text-xs font-extrabold text-[#4e342e] mb-1">
+            <label for="fontSize">🔠 字體大小：</label>
+            <span id="fontSizeVal" class="text-[#8d5b4c] font-black">36 px</span>
+          </div>
+          <input 
+            type="range" 
+            id="fontSize" 
+            min="16" 
+            max="80" 
+            value="36" 
+            class="w-full cursor-pointer h-2 bg-[#d7ccc8] rounded-lg"
+            oninput="updateMeme()"
+          >
+        </div>
+
+        <!-- 上方文字垂直位置滑桿 -->
+        <div>
+          <div class="flex justify-between text-xs font-extrabold text-[#4e342e] mb-1">
+            <label for="topTextPos">⬆️ 上方文字位置 (Top)：</label>
+            <span id="topTextPosVal" class="text-[#8d5b4c] font-black">6 %</span>
+          </div>
+          <input 
+            type="range" 
+            id="topTextPos" 
+            min="0" 
+            max="40" 
+            value="6" 
+            class="w-full cursor-pointer h-2 bg-[#d7ccc8] rounded-lg"
+            oninput="updateMeme()"
+          >
+        </div>
+
+        <!-- 下方文字垂直位置滑桿 -->
+        <div>
+          <div class="flex justify-between text-xs font-extrabold text-[#4e342e] mb-1">
+            <label for="bottomTextPos">⬇️ 下方文字位置 (Bottom)：</label>
+            <span id="bottomTextPosVal" class="text-[#8d5b4c] font-black">6 %</span>
+          </div>
+          <input 
+            type="range" 
+            id="bottomTextPos" 
+            min="0" 
+            max="40" 
+            value="6" 
+            class="w-full cursor-pointer h-2 bg-[#d7ccc8] rounded-lg"
+            oninput="updateMeme()"
+          >
+        </div>
+
+        <!-- 加分選單：字型與文字顏色 -->
+        <div class="grid grid-cols-2 gap-3 pt-1">
+          <div>
+            <label for="fontFamily" class="block text-xs font-extrabold text-[#4e342e] mb-1">字體選擇：</label>
+            <select 
+              id="fontFamily" 
+              class="w-full h-9 px-2 text-xs bg-[#fff8f0] border-2 border-[#a1887f] rounded-xl focus:outline-none font-bold"
+              onchange="updateMeme()"
+            >
+              <option value="'Baloo 2', 'Noto Sans TC', sans-serif" selected>圓潤可愛 (Baloo)</option>
+              <option value="'Noto Sans TC', sans-serif">經典黑體 (Noto)</option>
+              <option value="'Impact', sans-serif">經典迷因 (Impact)</option>
+            </select>
+          </div>
+          <div>
+            <label for="textColor" class="block text-xs font-extrabold text-[#4e342e] mb-1">文字顏彩：</label>
+            <input 
+              type="color" 
+              id="textColor" 
+              value="#FFFFFF" 
+              class="w-full h-9 p-1 rounded-xl border-2 border-[#a1887f] bg-[#fff8f0] cursor-pointer"
+              oninput="updateMeme()"
+            >
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. 一鍵下載按鈕 -->
+      <div class="pt-2">
+        <button 
+          id="downloadBtn"
+          onclick="downloadMeme()"
+          class="bakery-btn w-full py-3.5 px-6 font-extrabold text-base rounded-2xl border-2 border-[#efebe9] flex items-center justify-center gap-2 text-white"
+        >
+          <span id="btnIcon" class="text-xl">🍞</span>
+          <span id="btnText">新鮮出爐！一鍵下載 (my-meme.png)</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- 右側：迷因即時預覽區 (7 欄) -->
+    <section class="lg:col-span-7 flex flex-col items-center">
+      <div class="w-full mb-3 flex justify-between items-center px-3">
+        <span class="text-base font-extrabold text-[#fff8f0] flex items-center gap-1.5">
+          <span>🖼️</span> 烘焙預覽畫布
+        </span>
+        <span class="text-xs text-[#d7ccc8] font-bold">即時對齊 ‧ 高清轉繪</span>
+      </div>
+
+      <!-- 迷因畫布容器 (包含底圖與文字，為 html2canvas 擷取標的) -->
+      <div 
+        id="memeContainer" 
+        class="relative w-full max-w-[520px] aspect-square bg-[#2b1d19] rounded-3xl overflow-hidden border-8 border-[#6d4c41] shadow-2xl flex items-center justify-center select-none"
+      >
+        <!-- 迷因底圖 -->
+        <img 
+          id="memeBgImg" 
+          src="" 
+          alt="Meme Canvas Background" 
+          class="absolute inset-0 w-full h-full object-contain bg-[#1f1512]"
+        >
+
+        <!-- 上方文字 Overlay -->
+        <div 
+          id="memeTopText" 
+          class="absolute left-0 right-0 text-center px-4 pointer-events-none meme-text-stroke text-white transition-all duration-75"
+          style="top: 6%; font-size: 36px;"
+        >
+          早上來一杯熱咖啡
+        </div>
+
+        <!-- 下方文字 Overlay -->
+        <div 
+          id="memeBottomText" 
+          class="absolute left-0 right-0 text-center px-4 pointer-events-none meme-text-stroke text-white transition-all duration-75"
+          style="bottom: 6%; font-size: 36px;"
+        >
+          烘焙出一天好心情！
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- 頁腳 -->
+  <footer class="text-center text-xs text-[#a1887f] font-bold pt-4 border-t border-[#5d4037]">
+    <p>☕ 溫暖咖啡烘焙迷因產生器 ‧ 使用 FileReader 於本機端載入圖檔，安全保護您的個人隱私</p>
+  </footer>
+
+  <!-- JavaScript 事件處理與邏輯區 -->
+  <script>
+    /**
+     * 當 DOM 網頁全部加載完畢後自動執行的初始化函式
+     */
+    window.onload = function() {
+      // 1. 預設繪製一張「貓咪吐司」作為畫布初始底圖
+      loadSampleImage('cat_bread');
+      // 2. 觸發一次樣式更新，使 UI 控制欄位數值與預覽文字完全一致
+      updateMeme();
+    };
+
+    /**
+     * 【重要核心 1：FileReader 本機圖片上傳】
+     * 讀取使用者從電腦/手機上傳的檔案，並藉由 FileReader API 轉換成 Base64 Data URL 格式。
+     * 這種做法完全不需要經過外部伺服器，因此 100% 避開 html2canvas 截圖時常見的 CORS 跨域安全阻擋！
+     */
+    function handleImageUpload(event) {
+      // 取得使用者選取的第 1 個檔案
+      const file = event.target.files[0];
+      if (!file) return;
+
+      // 檢查上傳的檔案格式是否為圖片
+      if (!file.type.startsWith('image/')) {
+        alert('請選擇有效的圖片格式 (JPEG, PNG, WEBP)！');
+        return;
+      }
+
+      // 建立 FileReader 實例
+      const reader = new FileReader();
+
+      // 當 FileReader 完成讀取檔案時觸發此事件
+      reader.onload = function(e) {
+        const bgImg = document.getElementById('memeBgImg');
+        // e.target.result 為讀取完成後的 Base64 Data URL 字串
+        bgImg.src = e.target.result;
+      };
+
+      // 開始讀取圖片檔案，轉換為 Data URL 格式
+      reader.readAsDataURL(file);
+    }
+
+    /**
+     * 【動態畫布：產生預設烘焙風格底圖】
      * 當使用者尚未上傳圖片時，動態以 Canvas 繪製好看的咖啡/烘焙插畫作為底圖
      */
     function loadSampleImage(type) {
