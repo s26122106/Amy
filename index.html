@@ -1,597 +1,1185 @@
 <!DOCTYPE html>
+
 <html lang="zh-TW">
+
 <head>
+
   <meta charset="UTF-8">
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>我的網頁作品集 | Vintage Coffee Portfolio Quest</title>
+
   
+
   <!-- Google Fonts: Noto Serif TC & Playfair Display for Classic Vintage Vibe -->
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
+
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&family=Playfair+Display:ital,wght@0,700;1,600&display=swap" rel="stylesheet">
+
   
+
   <style>
+
     :root {
+
       --bg-cream: #f4eee0;
+
       --bg-parchment: #e8dfca;
+
       --coffee-light: #d6c5b0;
+
       --coffee-mid: #8c6d53;
+
       --coffee-dark: #4a3425;
+
       --coffee-black: #2b1b12;
+
       --gold-accent: #d4a359;
+
       --gold-glow: rgba(212, 163, 89, 0.4);
+
       --locked-bg: #d8cfc4;
+
       --locked-text: #82756a;
+
       --shadow-retro: 0 10px 25px rgba(43, 27, 18, 0.18);
+
       --font-family: 'Noto Serif TC', 'Playfair Display', Georgia, serif;
+
     }
+
+
 
     * {
+
       box-sizing: border-box;
+
       margin: 0;
+
       padding: 0;
+
     }
+
+
 
     body {
+
       background-color: var(--bg-cream);
+
       /* Subtle vintage polka/texture overlay */
+
       background-image: 
+
         radial-gradient(var(--coffee-light) 1px, transparent 0),
+
         radial-gradient(var(--coffee-light) 1px, var(--bg-cream) 0);
+
       background-size: 28px 28px;
+
       background-position: 0 0, 14px 14px;
+
       color: var(--coffee-black);
+
       font-family: var(--font-family);
+
       min-height: 100vh;
+
       display: flex;
+
       flex-direction: column;
+
       align-items: center;
+
       justify-content: center;
+
       padding: 30px 15px;
+
       position: relative;
+
     }
+
+
 
     .portfolio-wrapper {
+
       width: 100%;
+
       max-width: 1080px;
+
       background: linear-gradient(135deg, rgba(244, 238, 224, 0.96), rgba(232, 223, 202, 0.96));
+
       border: 4px solid var(--coffee-dark);
+
       outline: 2px dashed var(--coffee-mid);
+
       outline-offset: -10px;
+
       border-radius: 24px;
+
       padding: 45px 30px;
+
       box-shadow: var(--shadow-retro), inset 0 0 50px rgba(140, 109, 83, 0.12);
+
       position: relative;
+
       backdrop-filter: blur(6px);
+
     }
+
+
 
     /* Vintage Corner Rivets */
+
     .corner-bolt {
+
       position: absolute;
+
       width: 14px;
+
       height: 14px;
+
       background: var(--coffee-mid);
+
       border: 2px solid var(--coffee-dark);
+
       border-radius: 50%;
+
     }
+
     .bolt-tl { top: 14px; left: 14px; }
+
     .bolt-tr { top: 14px; right: 14px; }
+
     .bolt-bl { bottom: 14px; left: 14px; }
+
     .bolt-br { bottom: 14px; right: 14px; }
 
+
+
     header {
+
       text-align: center;
+
       margin-bottom: 35px;
+
       display: flex;
+
       flex-direction: column;
+
       align-items: center;
+
     }
+
+
 
     .avatar-wrapper {
+
       position: relative;
+
       width: 130px;
+
       height: 130px;
+
       margin-bottom: 18px;
+
     }
+
+
 
     .avatar-img {
+
       width: 100%;
+
       height: 100%;
+
       object-fit: cover;
+
       border-radius: 50%;
+
       border: 4px solid var(--coffee-dark);
+
       box-shadow: 0 8px 18px rgba(43, 27, 18, 0.25);
+
       background-color: var(--coffee-light);
+
       transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
     }
+
+
 
     .avatar-wrapper:hover .avatar-img {
+
       transform: scale(1.06) rotate(-3deg);
+
     }
+
+
 
     .level-badge {
+
       position: absolute;
+
       bottom: -4px;
+
       right: 2px;
+
       background: var(--coffee-dark);
+
       color: var(--bg-cream);
+
       font-size: 0.75rem;
+
       font-weight: bold;
+
       padding: 4px 10px;
+
       border-radius: 12px;
+
       border: 2px solid var(--gold-accent);
+
       letter-spacing: 1px;
+
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+
     }
+
+
 
     .user-name {
+
       font-size: 2.1rem;
+
       font-weight: 900;
+
       color: var(--coffee-black);
+
       letter-spacing: 2px;
+
       margin-bottom: 6px;
+
       text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.8);
+
     }
+
+
 
     .user-subtitle {
+
       font-size: 0.95rem;
+
       color: var(--coffee-mid);
+
       font-style: italic;
+
       letter-spacing: 1px;
+
       position: relative;
+
       display: inline-block;
+
       padding: 0 20px;
+
     }
+
+
 
     .user-subtitle::before,
+
     .user-subtitle::after {
+
       content: "☕";
+
       font-size: 0.8rem;
+
       opacity: 0.7;
+
       margin: 0 8px;
+
     }
+
+
 
     .quest-banner {
+
       margin-top: 25px;
+
       background: var(--coffee-dark);
+
       color: var(--bg-cream);
+
       display: inline-flex;
+
       align-items: center;
+
       gap: 8px;
+
       padding: 8px 22px;
+
       border-radius: 30px;
+
       font-size: 0.9rem;
+
       letter-spacing: 1.5px;
+
       border: 1.5px solid var(--gold-accent);
+
       box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+
     }
+
+
 
     .grid-container {
+
       display: grid;
+
       grid-template-columns: repeat(4, 1fr);
+
       gap: 18px;
+
       margin-top: 10px;
+
     }
+
+
 
     .quest-card {
+
       text-decoration: none;
+
       color: inherit;
+
       position: relative;
+
       background: linear-gradient(145deg, #fbf7f0, #eae0cf);
+
       border: 2px solid var(--coffee-mid);
+
       border-radius: 16px;
+
       padding: 20px 14px;
+
       display: flex;
+
       flex-direction: column;
+
       align-items: center;
+
       justify-content: center;
+
       min-height: 125px;
+
       box-shadow: 0 4px 10px rgba(43, 27, 18, 0.08);
+
       transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+
       overflow: hidden;
+
       cursor: pointer;
+
       user-select: none;
+
     }
+
+
 
     .quest-card::before {
+
       content: "";
+
       position: absolute;
+
       top: 0; left: 0; right: 0; bottom: 0;
+
       border: 1px solid rgba(255, 255, 255, 0.6);
+
       border-radius: 14px;
+
       pointer-events: none;
+
     }
+
+
 
     .quest-card.unlocked {
+
       border-color: var(--coffee-dark);
+
     }
+
+
 
     .quest-card.unlocked:hover {
+
       transform: translateY(-6px) scale(1.02);
+
       border-color: var(--gold-accent);
+
       box-shadow: 0 12px 24px var(--gold-glow), 0 6px 12px rgba(43, 27, 18, 0.15);
+
       background: linear-gradient(145deg, #ffffff, #f2e5d3);
+
     }
+
+
 
     .quest-card.unlocked:active {
+
       transform: translateY(-2px) scale(0.99);
+
       box-shadow: 0 4px 8px rgba(43, 27, 18, 0.2);
+
     }
+
+
 
     /* Shimmer flare effect on unlocked hover */
+
     .quest-card.unlocked::after {
+
       content: "";
+
       position: absolute;
+
       top: -60%;
+
       left: -60%;
+
       width: 220%;
+
       height: 220%;
+
       background: linear-gradient(
+
         45deg,
+
         transparent 45%,
+
         rgba(255, 255, 255, 0.5) 50%,
+
         transparent 55%
+
       );
+
       transform: rotate(30deg) translateY(-100%);
+
       transition: transform 0.7s ease;
+
     }
+
+
 
     .quest-card.unlocked:hover::after {
+
       transform: rotate(30deg) translateY(100%);
+
     }
+
+
 
     /* Card Contents */
+
     .stage-tag {
+
       font-size: 0.72rem;
+
       font-weight: 700;
+
       letter-spacing: 1.5px;
+
       color: var(--coffee-mid);
+
       margin-bottom: 6px;
+
       text-transform: uppercase;
+
     }
+
+
 
     .quest-card.unlocked .stage-tag {
+
       color: var(--gold-accent);
+
     }
+
+
 
     .quest-title {
+
       font-size: 0.98rem;
+
       font-weight: 700;
+
       text-align: center;
+
       line-height: 1.35;
+
       color: var(--coffee-black);
+
     }
+
+
 
     .quest-icon {
+
       margin-top: 10px;
+
       font-size: 1.2rem;
+
       transition: transform 0.3s ease;
+
     }
+
+
 
     .quest-card.unlocked:hover .quest-icon {
+
       transform: scale(1.25) rotate(-5deg);
+
     }
+
+
 
     .quest-card.locked {
+
       background: var(--locked-bg);
+
       border-color: #beb2a4;
+
       opacity: 0.75;
+
       box-shadow: none;
+
     }
+
+
 
     .quest-card.locked .stage-tag,
+
     .quest-card.locked .quest-title {
+
       color: var(--locked-text);
+
       font-weight: 500;
+
     }
+
+
 
     .quest-card.locked:hover {
+
       animation: lockedShake 0.4s ease-in-out;
+
       border-color: var(--coffee-mid);
+
       opacity: 0.9;
+
     }
+
+
 
     @keyframes lockedShake {
+
       0%, 100% { transform: translateX(0); }
+
       20% { transform: translateX(-4px) rotate(-1deg); }
+
       40% { transform: translateX(4px) rotate(1deg); }
+
       60% { transform: translateX(-3px); }
+
       80% { transform: translateX(3px); }
+
     }
+
+
 
     .unlocked-indicator {
+
       position: absolute;
+
       top: 8px;
+
       right: 8px;
+
       width: 8px;
+
       height: 8px;
+
       background-color: #4eb862;
+
       border-radius: 50%;
+
       box-shadow: 0 0 6px #4eb862;
+
     }
+
+
 
     .modal-overlay {
+
       position: fixed;
+
       top: 0; left: 0; right: 0; bottom: 0;
+
       background: rgba(43, 27, 18, 0.5);
+
       display: flex;
+
       align-items: center;
+
       justify-content: center;
+
       z-index: 1000;
+
       opacity: 0;
+
       visibility: hidden;
+
       transition: all 0.3s ease;
+
       backdrop-filter: blur(4px);
+
     }
+
+
 
     .modal-overlay.active {
+
       opacity: 1;
+
       visibility: visible;
+
     }
+
+
 
     .modal-box {
+
       background: var(--bg-cream);
+
       border: 3px solid var(--coffee-dark);
+
       outline: 2px dashed var(--coffee-mid);
+
       outline-offset: -6px;
+
       border-radius: 18px;
+
       padding: 30px;
+
       max-width: 380px;
+
       width: 90%;
+
       text-align: center;
+
       box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+
       transform: scale(0.85);
+
       transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
     }
+
+
 
     .modal-overlay.active .modal-box {
+
       transform: scale(1);
+
     }
+
+
 
     .modal-icon {
+
       font-size: 2.8rem;
+
       margin-bottom: 12px;
+
       display: block;
+
     }
+
+
 
     .modal-msg {
+
       font-size: 1.05rem;
+
       color: var(--coffee-black);
+
       font-weight: bold;
+
       margin-bottom: 22px;
+
       line-height: 1.5;
+
     }
+
+
 
     .modal-btn {
+
       background: var(--coffee-dark);
+
       color: var(--bg-cream);
+
       border: 1px solid var(--gold-accent);
+
       padding: 9px 26px;
+
       border-radius: 20px;
+
       font-family: inherit;
+
       font-size: 0.95rem;
+
       font-weight: bold;
+
       cursor: pointer;
+
       transition: background 0.2s;
+
     }
+
+
 
     .modal-btn:hover {
+
       background: var(--coffee-mid);
+
     }
+
+
 
     footer {
+
       margin-top: 35px;
+
       text-align: center;
+
       font-size: 0.85rem;
+
       color: var(--coffee-mid);
+
     }
+
+
 
     /* Responsive Breaks */
+
     @media (max-width: 900px) {
+
       .grid-container {
+
         grid-template-columns: repeat(3, 1fr);
+
       }
+
     }
+
+
 
     @media (max-width: 640px) {
+
       .portfolio-wrapper {
+
         padding: 30px 16px;
-      }
-      
-      .user-name {
-        font-size: 1.6rem;
+
       }
 
-      .grid-container {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
+      
+
+      .user-name {
+
+        font-size: 1.6rem;
+
       }
+
+
+
+      .grid-container {
+
+        grid-template-columns: repeat(2, 1fr);
+
+        gap: 12px;
+
+      }
+
+
 
       .quest-card {
+
         min-height: 110px;
+
         padding: 14px 10px;
+
       }
+
+
 
       .quest-title {
+
         font-size: 0.88rem;
+
       }
+
     }
+
+
 
     @media (max-width: 380px) {
+
       .grid-container {
+
         grid-template-columns: 1fr;
+
       }
+
     }
+
   </style>
+
 </head>
+
 <body>
 
+
+
   <div class="portfolio-wrapper">
+
     <!-- Corner Bolts -->
+
     <div class="corner-bolt bolt-tl"></div>
+
     <div class="corner-bolt bolt-tr"></div>
+
     <div class="corner-bolt bolt-bl"></div>
+
     <div class="corner-bolt bolt-br"></div>
 
+
+
     <!-- Header Section -->
+
     <header>
+
       <div class="avatar-wrapper">
+
         <img src="https://picsum.photos/id/64/150/150" alt="大頭貼" class="avatar-img" onerror="this.src='https://placehold.co/150x150/4a3425/f4eee0?text=Avatar'">
+
         <span class="level-badge">LV.16</span>
+
       </div>
+
       <h1 class="user-name">我的課程作品集</h1>
+
       <p class="user-subtitle">Web Programming Portfolio Quest</p>
 
+
+
       <div class="quest-banner">
+
         🗺️ 點擊關卡卡片開啟網頁作品
+
       </div>
+
     </header>
 
+
+
     <main class="grid-container">
+
       
+
       <!-- Button 1 (Unlocked) -->
+
       <a href="w1/index.html" class="quest-card unlocked">
+
         <span class="unlocked-indicator"></span>
+
         <span class="stage-tag">STAGE 01</span>
+
         <h2 class="quest-title">Week 1<br>數位名片</h2>
+
         <span class="quest-icon">📜</span>
+
       </a>
+
+
 
       <!-- Button 2 (Unlocked) -->
+
       <a href="w2/index.html" class="quest-card unlocked">
+
         <span class="unlocked-indicator"></span>
+
         <span class="stage-tag">STAGE 02</span>
+
         <h2 class="quest-title">Week 2<br>今天吃甚麼？</h2>
+
         <span class="quest-icon">🍲</span>
+
       </a>
 
-      <!-- Button 3 (Unlocked) -->
+
+
+         <!-- Button 3 (Unlocked) -->
+
       <a href="w3/index.html" class="quest-card unlocked">
+
         <span class="unlocked-indicator"></span>
-        <span class="stage-tag">STAGE 03</span>
+
+        <span class="stage-tag">STAGE 03</spa？n>
+
         <h2 class="quest-title">Week 3<br>迷因圖產生器</h2>
-        <span class="quest-icon">🖼️</span>
+
+        <span class="quest-icon">🍲</span>
+
       </a>
+
+
 
       <!-- Button 4 (Unlocked) -->
+
       <a href="w4/index.html" class="quest-card unlocked">
+
         <span class="unlocked-indicator"></span>
-        <span class="stage-tag">STAGE 04</span>
+
+        <span class="stage-tag">STAGE 04</spa？n>
+
         <h2 class="quest-title">Week 4<br>悄悄話</h2>
-        <span class="quest-icon">💌</span>
+
+        <span class="quest-icon">🍲</span>
+
       </a>
 
-      <!-- Locked Stages (5-16) -->
+
+
       <div class="quest-card locked" onclick="showLockedModal(5)">
+
         <span class="stage-tag">STAGE 05</span>
+
         <h2 class="quest-title">Week 5<br>尚未開啟</h2>
+
         <span class="quest-icon">🔒</span>
+
       </div>
+
+
 
       <div class="quest-card locked" onclick="showLockedModal(6)">
+
         <span class="stage-tag">STAGE 06</span>
+
         <h2 class="quest-title">Week 6<br>尚未開啟</h2>
+
         <span class="quest-icon">🔒</span>
+
       </div>
+
+
 
       <div class="quest-card locked" onclick="showLockedModal(7)">
+
         <span class="stage-tag">STAGE 07</span>
+
         <h2 class="quest-title">Week 7<br>尚未開啟</h2>
+
         <span class="quest-icon">🔒</span>
+
       </div>
+
+
 
       <div class="quest-card locked" onclick="showLockedModal(8)">
+
         <span class="stage-tag">STAGE 08</span>
+
         <h2 class="quest-title">Week 8<br>尚未開啟</h2>
+
         <span class="quest-icon">🔒</span>
+
       </div>
+
+
 
       <div class="quest-card locked" onclick="showLockedModal(9)">
+
         <span class="stage-tag">STAGE 09</span>
+
         <h2 class="quest-title">Week 9<br>尚未開啟</h2>
+
         <span class="quest-icon">🔒</span>
+
       </div>
+
+
 
       <div class="quest-card locked" onclick="showLockedModal(10)">
+
         <span class="stage-tag">STAGE 10</span>
+
         <h2 class="quest-title">Week 10<br>尚未開啟</h2>
+
         <span class="quest-icon">🔒</span>
+
       </div>
+
+
 
       <div class="quest-card locked" onclick="showLockedModal(11)">
+
         <span class="stage-tag">STAGE 11</span>
+
         <h2 class="quest-title">Week 11<br>尚未開啟</h2>
+
         <span class="quest-icon">🔒</span>
+
       </div>
+
+
 
       <div class="quest-card locked" onclick="showLockedModal(12)">
+
         <span class="stage-tag">STAGE 12</span>
+
         <h2 class="quest-title">Week 12<br>尚未開啟</h2>
+
         <span class="quest-icon">🔒</span>
+
       </div>
+
+
 
       <div class="quest-card locked" onclick="showLockedModal(13)">
+
         <span class="stage-tag">STAGE 13</span>
+
         <h2 class="quest-title">Week 13<br>尚未開啟</h2>
+
         <span class="quest-icon">🔒</span>
+
       </div>
+
+
 
       <div class="quest-card locked" onclick="showLockedModal(14)">
+
         <span class="stage-tag">STAGE 14</span>
+
         <h2 class="quest-title">Week 14<br>尚未開啟</h2>
+
         <span class="quest-icon">🔒</span>
+
       </div>
+
+
 
       <div class="quest-card locked" onclick="showLockedModal(15)">
+
         <span class="stage-tag">STAGE 15</span>
+
         <h2 class="quest-title">Week 15<br>尚未開啟</h2>
+
         <span class="quest-icon">🔒</span>
+
       </div>
 
+
+
       <div class="quest-card locked" onclick="showLockedModal(16)">
+
         <span class="stage-tag">STAGE 16</span>
+
         <h2 class="quest-title">Week 16<br>尚未開啟</h2>
+
         <span class="quest-icon">🔒</span>
+
       </div>
+
+
 
     </main>
 
+
+
     <!-- Footer -->
+
     <footer>
+
       <p>© 網頁程式設計課程作品集 • Vintage Coffee Theme</p>
+
     </footer>
+
   </div>
+
+
 
   <!-- Retro Modal Notice -->
+
   <div class="modal-overlay" id="lockedModal">
+
     <div class="modal-box">
+
       <span class="modal-icon">🔒</span>
+
       <p class="modal-msg" id="modalText">關卡未解鎖！請完成前面的任務～</p>
+
       <button class="modal-btn" onclick="closeModal()">我知道了</button>
+
     </div>
+
   </div>
 
+
+
   <script>
+
     const modal = document.getElementById('lockedModal');
+
     const modalText = document.getElementById('modalText');
 
+
+
     function showLockedModal(weekNum) {
+
       modalText.innerText = `🔒 Week ${weekNum} 關卡未解鎖！\n請先完成前面的任務～`;
+
       modal.classList.add('active');
+
     }
+
+
 
     function closeModal() {
+
       modal.classList.remove('active');
+
     }
 
+
+
     modal.addEventListener('click', (e) => {
+
       if (e.target === modal) {
+
         closeModal();
+
       }
+
     });
+
   </script>
+
 </body>
-</html>
-  </script>
-</body>
-</html>
+
+</html> 
