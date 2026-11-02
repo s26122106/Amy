@@ -214,7 +214,7 @@
        重點特效：當卡片被選中 (Focused/Highlighted) 時的樣式
        --------------------------------------------------------- */
     .card.highlight {
-      transform: scale(1.08) zIndex(10);
+      transform: scale(1.08);
       border-color: var(--highlight-border);
       box-shadow: 0 15px 35px var(--highlight-glow),
                   0 0 20px rgba(212, 163, 115, 0.3);
@@ -279,11 +279,8 @@
       let insideQuotes = false;
 
       for (let i = 0; i < csvText.length; i++) {
-        const char = csvText[charIdx(i)];
+        const char = csvText[i];
         const nextChar = csvText[i + 1];
-
-        // 輔助取得當前字元
-        function charIdx(idx) { return idx; }
 
         if (char === '"') {
           if (insideQuotes && nextChar === '"') {
@@ -348,7 +345,7 @@
         loadingEl.style.display = 'none';
 
         if (dataRows.length === 0) {
-          containerEl.innerHTML = '<p style="text-align:center; width:100%; grid-column: 1/-1;">目前還沒有任何留言喔！</p>';
+          containerEl.innerHTML = '<p style="text-align:center; width:100%;">目前還沒有任何留言喔！</p>';
           return;
         }
 
@@ -396,35 +393,41 @@
     function startCarousel(containerEl) {
       if (cardElements.length === 0) return;
 
-      // 標示牆面當前有卡片處於 active 狀態 (觸發其他卡片變暗的 CSS)
       containerEl.classList.add('has-active');
 
       function highlightNextCard() {
-        // 移除上一張卡片的 highlight 類別
         if (currentIndex >= 0 && cardElements[currentIndex]) {
           cardElements[currentIndex].classList.remove('highlight');
         }
 
-        // 算下一張卡片的 index (循環)
         currentIndex = (currentIndex + 1) % cardElements.length;
 
-        // 加上 Highlight 特效
         const currentCard = cardElements[currentIndex];
         currentCard.classList.add('highlight');
 
-        // 自動平滑滾動至亮起卡片的位置 (若不在可視範圍內)
         currentCard.scrollIntoView({
           behavior: 'smooth',
           block: 'nearest'
         });
       }
 
-      // 立即執行第一次 highlight
       highlightNextCard();
-
-      // 設定計時器，每隔指定秒數自動更換
       timerId = setInterval(highlightNextCard, ROTATE_INTERVAL_MS);
     }
 
-    // 簡單的 XSS 防護字串轉義工具
+    // XSS 防護字串轉義工具
     function escapeHTML(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    // 頁面載入完成後自動執行
+    document.addEventListener('DOMContentLoaded', initMessageBoard);
+  </script>
+</body>
+</html>
