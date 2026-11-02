@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>今天吃甚麼 - 隨機抽籤機</title>
+  
+  <!-- FontAwesome 圖示庫與 Google Noto Sans 字型 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- CSS 樣式表直接內嵌 -->
+  <style>
+    /* 馬卡龍咖啡柔和配色 */
+    :root {
+      --bg-color: #FDF8F5;          /* 柔和奶油底色 */
+      --card-bg: #FFF9F3;           /* 卡片底色 */
+      --primary-color: #8D6E63;      /* 暖咖啡主色 */
+      --primary-hover: #6D4C41;      /* 咖啡深色 */
+      --primary-shadow: #5D4037;     /* 經典按鈕陰影色 */
+      --accent-color: #D7CCC8;       /* 淺拿鐵邊框色 */
+      --cream-color: #F5EBE6;        /* 奶油色 */
+      --text-main: #4E342E;          /* 深可可字體色 */
+      --text-muted: #A1887F;         /* 淺褐副標題 */
+      --gold-color: #E0A96D;         /* 金黃點睛色 */
+      --emerald-color: #059669;      /* 地圖按鈕綠色 */
+      --emerald-hover: #047857;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      background-image: radial-gradient(#EFEBE9 1.5px, transparent 1.5px);
+      background-size: 24px 24px;
+      font-family: 'Noto Sans TC', sans-serif;
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      padding: 24px 16px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 520px;
+      margin: auto;
+    }
+
+    .header-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 18px;
+      border-radius: 999px;
+      background-color: var(--cream-color);
+      color: var(--primary-color);
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin: 0 auto 16px auto;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    }
+
+    .main-card {
+      background-color: var(--card-bg);
+      border-radius: 28px;
+      padding: 32px 24px;
+      box-shadow: 0 10px 25px -5px rgba(78, 52, 46, 0.08);
+      border: 1px solid var(--cream-color);
+      text-align: center;
+    }
+
+    .title-container {
+      min-height: 120px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+    }
+
+    .sub-heading {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .main-title {
+      font-size: 2.25rem;
+      font-weight: 800;
+      color: var(--primary-color);
+      margin: 8px 0;
+      transition: all 0.3s ease;
+    }
+
+    .hint-text {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .result-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .image-wrapper {
+      position: relative;
+      width: 100%;
+      height: 220px;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 8px 20px rgba(78, 52, 46, 0.1);
+      border: 4px solid #FFFFFF;
+      margin-bottom: 20px;
+    }
+
+    .image-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .category-tag {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background-color: rgba(255, 255, 255, 0.92);
+      color: var(--primary-color);
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 999px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+
+    .map-btn {
+      width: 100%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background-color: var(--emerald-color);
+      color: #FFFFFF;
+      font-weight: 700;
+      padding: 14px 24px;
+      border-radius: 16px;
+      text-decoration: none;
+      font-size: 1rem;
+      box-shadow: 0 6px 15px rgba(5, 150, 105, 0.25);
+      transition: background-color 0.2s, transform 0.1s;
+    }
+
+    .map-btn:hover {
+      background-color: var(--emerald-hover);
+    }
+
+    .draw-btn {
+      width: 100%;
+      padding: 18px;
+      background-color: var(--primary-color);
+      color: #FFFFFF;
+      font-size: 1.35rem;
+      font-weight: 800;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      box-shadow: 0 6px 0px var(--primary-shadow), 0 10px 15px rgba(93, 64, 55, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      transition: all 0.15s ease;
+    }
+
+    .draw-btn:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .draw-btn:active {
+      box-shadow: 0 2px 0px var(--primary-shadow), 0 4px 6px rgba(93, 64, 55, 0.2);
+      transform: translateY(4px);
+    }
+
+    .dice-icon {
+      color: var(--gold-color);
+      font-size: 1.6rem;
+    }
+
+    .footer {
+      margin-top: 32px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    /* 滾動閃爍動畫 */
+    .animate-shuffle {
+      animation: shuffle 0.1s infinite linear;
+      color: var(--gold-color) !important;
+    }
+
+    @keyframes shuffle {
+      0% { transform: translateY(-4px); opacity: 0.8; }
+      50% { transform: translateY(4px); opacity: 1; }
+      100% { transform: translateY(0); opacity: 0.8; }
+    }
+
+    /* 生動彈跳登場動畫 */
+    .animate-bounce-in {
+      animation: bounceIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+
+    @keyframes bounceIn {
+      0% { transform: scale(0.3); opacity: 0; }
+      50% { transform: scale(1.15); }
+      70% { transform: scale(0.95); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header-badge">
+      <i class="fa-solid fa-utensils"></i> 馬卡龍特選風格
+    </div>
+
+    <main class="main-card">
+      <div class="title-container">
+        <p id="sub-heading" class="sub-heading">今日美食指南</p>
+        <h1 id="main-title" class="main-title">今天吃甚麼</h1>
+        <p id="hint-text" class="hint-text">猶豫不決嗎？點擊下方按鈕交給命運！</p>
+      </div>
+
+      <!-- 抽中後顯示的美食圖片與馬上出發按鈕 -->
+      <div id="result-card" class="result-card hidden">
+        <div class="image-wrapper">
+          <img id="food-image" src="" alt="美食圖片">
+          <span id="food-category" class="category-tag">精選推薦</span>
+        </div>
+
+        <a id="google-map-btn" href="#" target="_blank" rel="noopener noreferrer" class="map-btn">
+          <i class="fa-solid fa-map-location-dot"></i>
+          <span>馬上出發 (開啟 Google Map)</span>
+        </a>
+      </div>
+
+      <!-- 大抽籤按鈕 -->
+      <button id="draw-btn" class="draw-btn">
+        <i class="fa-solid fa-dice dice-icon"></i>
+        <span id="btn-text">點我抽籤</span>
+      </button>
+    </main>
+  </div>
+
+  <footer class="footer">
+    <p>馬卡龍咖啡風 · 今天吃甚麼隨機抽籤機</p>
+  </footer>
+
+  <!-- JavaScript 邏輯直接內嵌 -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+      // 1. 指定的美食選單與照片網路連結
+      const foodOptions = [
+        {
+          name: '麥當勞',
+          category: '美式速食',
+          image: 'https://images.unsplash.com/photo-1561758033-d89a9ad46330?q=80&w=800&auto=format&fit=crop'
+        },
+        {
+          name: '丹丹',
+          category: '中西式速食',
+          image: 'https://images.unsplash.com/photo-1550547660-d9450f859349?q=80&w=800&auto=format&fit=crop'
+        },
+        {
+          name: '深水食堂',
+          category: '日式溫馨料理',
+          image: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?q=80&w=800&auto=format&fit=crop'
+        },
+        {
+          name: '咖啡廳',
+          category: '輕食甜點咖啡',
+          image: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?q=80&w=800&auto=format&fit=crop'
+        },
+        {
+          name: '漢堡王',
+          category: '火烤美味美式',
+          image: 'https://images.unsplash.com/photo-1586190848861-99aa4a171e90?q=80&w=800&auto=format&fit=crop'
+        }
+      ];
+
+      let isDrawing = false;
+
+      // 2. 獲取頁面 DOM 元素
+      const mainTitle = document.getElementById('main-title');
+      const subHeading = document.getElementById('sub-heading');
+      const hintText = document.getElementById('hint-text');
+      const drawBtn = document.getElementById('draw-btn');
+      const btnText = document.getElementById('btn-text');
+      const resultCard = document.getElementById('result-card');
+      const foodImage = document.getElementById('food-image');
+      const foodCategory = document.getElementById('food-category');
+      const googleMapBtn = document.getElementById('google-map-btn');
+
+      // 3. 點擊按鈕進行抽籤
+      drawBtn.addEventListener('click', () => {
+        if (isDrawing) return;
+
+        isDrawing = true;
+        drawBtn.disabled = true;
+        btnText.textContent = '美味挑選中...';
+
+        // 隱藏前一次的結果卡片並清除舊動畫
+        resultCard.classList.add('hidden');
+        resultCard.classList.remove('animate-bounce-in');
+        mainTitle.classList.remove('animate-bounce-in');
+        
+        // 開啟動態閃爍文字
+        mainTitle.classList.add('animate-shuffle');
+        subHeading.textContent = '命運輪盤旋轉中...';
+        hintText.style.opacity = '0';
+
+        let duration = 1800; // 滾動持續 1.8 秒
+        let intervalTime = 70;
+        let elapsed = 0;
+
+        // 隨機快速切換文字
+        const interval = setInterval(() => {
+          const randomIndex = Math.floor(Math.random() * foodOptions.length);
+          mainTitle.textContent = foodOptions[randomIndex].name;
+          elapsed += intervalTime;
+
+          if (elapsed >= duration) {
+            clearInterval(interval);
+            finishDraw();
+          }
+        }, intervalTime);
+
+        // 完成抽籤
+        function finishDraw() {
+          // 隨機選擇結果
+          const finalChoice = foodOptions[Math.floor(Math.random() * foodOptions.length)];
+
+          // 停止閃爍，觸發生動彈跳動畫
+          mainTitle.classList.remove('animate-shuffle');
+          mainTitle.classList.add('animate-bounce-in');
+          
+          // 替換大標題與提示語
+          mainTitle.textContent = finalChoice.name;
+          subHeading.textContent = '🎉 今天就決定吃：';
+          hintText.textContent = '看來今天是個享用美食的好日子！';
+          hintText.style.opacity = '1';
+
+          // 載入對應美食圖片
+          foodImage.src = finalChoice.image;
+          foodCategory.textContent = finalChoice.category;
+
+          // 產生 Google 地圖搜尋連結
+          const encodedQuery = encodeURIComponent(finalChoice.name);
+          googleMapBtn.href = `https://www.google.com/maps/search/?api=1&query=${encodedQuery}`;
+
+          // 顯示圖片與馬上出發按鈕
+          setTimeout(() => {
+            resultCard.classList.remove('hidden');
+            resultCard.classList.add('animate-bounce-in');
+          }, 100);
+
+          // 恢復按鈕可點擊狀態
+          isDrawing = false;
+          drawBtn.disabled = false;
+          btnText.textContent = '再抽一次';
+        }
+      });
+
+    });
+  </script>
+</body>
+</html>
